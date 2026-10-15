@@ -1,0 +1,5 @@
+/.bundle/
+/vendor/bundle/
+/data/*.sqlite3*
+*.log
+.env
