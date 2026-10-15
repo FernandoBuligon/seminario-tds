@@ -5,6 +5,7 @@ require 'fileutils'
 
 set :bind, '127.0.0.1'
 set :server, :puma
+disable :show_exceptions
 set :database_path, File.join(__dir__, 'data', 'tasks.sqlite3')
 
 FileUtils.mkdir_p(File.dirname(settings.database_path))
@@ -19,6 +20,42 @@ SQLite3::Database.open(settings.database_path) do |database|
 end
 
 helpers do
+  def invalid_input(message)
+    halt 400, { error: message }.to_json
+  end
+
+  def task_id
+    id = params['id']
+    invalid_input('O id deve ser um inteiro positivo.') unless id.match?(/\A[1-9]\d*\z/)
+    id
+  end
+
+  def json_attributes(allowed_fields)
+    attributes = JSON.parse(request.body.read)
+    unless attributes.is_a?(Hash) && !attributes.empty?
+      invalid_input('Envie um objeto JSON com os campos da tarefa.')
+    end
+    unless (attributes.keys - allowed_fields).empty?
+      invalid_input("Campos permitidos: #{allowed_fields.join(', ')}.")
+    end
+
+    if attributes.key?('title')
+      title = attributes['title']
+      unless title.is_a?(String) && !title.strip.empty?
+        invalid_input('O título deve ser uma string não vazia.')
+      end
+      attributes['title'] = title.strip
+    end
+
+    if attributes.key?('completed') && ![true, false].include?(attributes['completed'])
+      invalid_input('O campo completed deve ser true ou false.')
+    end
+
+    attributes
+  rescue JSON::ParserError
+    invalid_input('JSON inválido.')
+  end
+
   def with_database
     database = SQLite3::Database.new(settings.database_path)
     database.results_as_hash = true
@@ -74,4 +111,37 @@ end
 
 before do
   content_type :json
+end
+
+get '/tasks' do
+  all_tasks.to_json
+end
+
+post '/tasks' do
+  attributes = json_attributes(['title'])
+  task = create_task(attributes['title'])
+  status 201
+  task.to_json
+end
+
+patch '/tasks/:id' do
+  id = task_id
+  attributes = json_attributes(%w[title completed])
+  task = update_task(id, attributes)
+  halt 404 unless task
+  task.to_json
+end
+
+delete '/tasks/:id' do
+  halt 404 unless delete_task(task_id)
+  status 204
+  body ''
+end
+
+not_found do
+  { error: 'Recurso não encontrado.' }.to_json
+end
+
+error do
+  { error: 'Erro interno do servidor.' }.to_json
 end
