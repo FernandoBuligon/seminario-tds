@@ -10,7 +10,8 @@ criar, atualizar e remover tarefas. Cada tarefa possui somente `id`, `title` e
 - Sinatra 4 para as rotas, `sqlite3` para acesso direto ao banco e JSON do Ruby.
 - Puma e Rackup para iniciar o servidor local no Sinatra 4.
 - Compilador C, Make e cabeçalhos de desenvolvimento do Ruby para as extensões das gems.
-- Git para obter o projeto e Postman desktop para a demonstração.
+- Git para obter o projeto e navegador com JavaScript para usar a interface.
+- Postman desktop ou CLI, opcional para demonstrar e testar as requisições da API.
 
 Não é necessário instalar um servidor SQLite: a gem acessa um arquivo local.
 As versões das dependências estão registradas no `Gemfile.lock`.
@@ -26,7 +27,8 @@ ruby --version
 ```
 
 Em outros sistemas, instale Ruby 3.2 ou superior com as ferramentas de compilação
-correspondentes. Instale o Postman desktop pelo [site oficial](https://www.postman.com/downloads/).
+correspondentes. Se quiser testar a API pelo Postman desktop, instale-o pelo
+[site oficial](https://www.postman.com/downloads/).
 
 Obtenha o projeto e entre no diretório:
 
@@ -59,6 +61,16 @@ O servidor atende em **http://127.0.0.1:4567**. Use `Ctrl+C` para encerrar e o
 mesmo comando para reiniciar. O diretório `data/`, o arquivo `tasks.sqlite3` e a
 tabela são criados automaticamente na primeira execução. O caminho do banco
 é relativo ao `app.rb`, independentemente do diretório de onde o Ruby foi chamado.
+
+Abra **http://127.0.0.1:4567** no navegador para usar a interface de tarefas.
+Digite um título e clique em **Adicionar**. Marque a caixa ao lado de uma tarefa
+para concluir ou reabrir, use **Editar** para mudar o título e **Excluir** para
+remover. **Atualizar lista** busca novamente os dados, inclusive alterações
+feitas pelo Postman. A interface exige JavaScript e usa os mesmos endpoints da API.
+
+O endereço **http://127.0.0.1:4567/tasks** continua exibindo a lista em JSON
+(`[]` quando o banco está vazio). O Postman é opcional para usar a interface;
+os exemplos abaixo permitem demonstrar e testar a API diretamente.
 
 Os dados permanecem salvos após encerrar o servidor. O banco não é versionado.
 
@@ -233,6 +245,9 @@ disponíveis para reproduzir a apresentação. Os testes foram locais pelo CLI.
 ```text
 seminario-tds/
 ├── app.rb                         # Configuração, SQLite, validações e rotas
+├── views/index.erb                # Página inicial de tarefas
+├── public/app.js                  # Interface que consome a API
+├── public/style.css               # Estilos da interface
 ├── Gemfile                        # Dependências diretas
 ├── Gemfile.lock                   # Versões resolvidas pelo Bundler
 ├── .gitignore                     # Banco e arquivos locais ignorados
@@ -242,7 +257,8 @@ seminario-tds/
     └── tasks.sqlite3              # Criado em execução; fora do Git
 ```
 
-A aplicação fica em um único arquivo para facilitar a explicação no seminário.
+A lógica da API fica no `app.rb` para facilitar a explicação no seminário.
+A interface usa um template HTML, CSS e JavaScript, sem dependências adicionais.
 O SQLite armazena `completed` como 0 ou 1; a API converte esses valores para
 booleanos JSON. O servidor escuta somente na máquina local, conforme o objetivo
 de demonstração acadêmica.
