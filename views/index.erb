@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Minhas tarefas</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="/style.css">
+  <script src="/app.js" defer></script>
+</head>
+<body>
+  <main>
+    <header>
+      <p class="eyebrow">SEMINÁRIO TDS · SINATRA</p>
+      <h1>Minhas tarefas</h1>
+      <p>Uma tarefa de cada vez. Organize o que precisa fazer.</p>
+    </header>
+    <section class="panel" aria-label="Gerenciar tarefas">
+      <form id="create-form">
+        <label for="title">Nova tarefa</label>
+        <div class="input-row">
+          <input id="title" name="title" placeholder="O que você precisa fazer?" required>
+          <button type="submit">Adicionar</button>
+        </div>
+      </form>
+      <p id="error" role="alert"></p>
+      <div class="list-heading">
+        <h2>Suas tarefas</h2>
+        <button id="reload" class="secondary" type="button">Atualizar lista</button>
+      </div>
+      <p id="status" role="status">Carregando tarefas…</p>
+      <ul id="tasks"></ul>
+      <p id="empty" hidden>Nenhuma tarefa por aqui. Adicione a primeira acima.</p>
+    </section>
+    <footer>As tarefas ficam salvas neste computador. <a href="/tasks">Ver JSON da API</a></footer>
+    <noscript><p>Ative o JavaScript no navegador para gerenciar suas tarefas.</p></noscript>
+  </main>
+</body>
+</html>

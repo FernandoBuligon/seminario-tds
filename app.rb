@@ -113,6 +113,11 @@ before do
   content_type :json
 end
 
+get '/' do
+  content_type :html
+  erb :index
+end
+
 get '/tasks' do
   all_tasks.to_json
 end
